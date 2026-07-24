@@ -1,0 +1,25 @@
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+      
+      match /{allSubcollections=**} {
+        // حماية السجلات المغلقة من التعديل أو الحذف نهائياً
+        // يمنع التعديل إذا كان الحقل lockedPeriod قيمته true
+        allow update, delete: if isOwner(userId) && (!resource.data.keys().contains('lockedPeriod') || resource.data.lockedPeriod == false);
+        
+        // منع حذف سجلات الإغلاق المالي لضمان النزاهة التاريخية
+        match /closingPeriods/{periodId} {
+          allow delete: if false;
+        }
+        
+        allow read, write: if isOwner(userId);
+      }
+    }
+  }
+}

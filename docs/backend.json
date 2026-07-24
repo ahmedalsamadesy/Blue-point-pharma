@@ -1,0 +1,95 @@
+
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user within the BluePointPharma application.",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "owner"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "lastLogin": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "email", "firstName", "lastName", "createdAt", "updatedAt"]
+    },
+    "InventoryValuation": {
+      "title": "InventoryValuation",
+      "type": "object",
+      "description": "Represents a manual financial valuation of the physical stock.",
+      "properties": {
+        "id": { "type": "string" },
+        "amount": { "type": "number" },
+        "date": { "type": "string" },
+        "recordedByName": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["amount", "date", "recordedByName"]
+    },
+    "CustomerValuation": {
+      "title": "CustomerValuation",
+      "type": "object",
+      "description": "Represents a manual verification of total customer debts.",
+      "properties": {
+        "id": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "date": { "type": "string" },
+        "recordedByName": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["totalAmount", "date"]
+    },
+    "Shortage": {
+      "title": "Shortage",
+      "type": "object",
+      "description": "Represents a manual purchase request for items not in system.",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "supplier": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "ClosedPeriod": {
+      "title": "ClosedPeriod",
+      "type": "object",
+      "description": "Represents a snapshot of the pharmacy's financial state at the end of a period.",
+      "properties": {
+        "id": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "totalSales": { "type": "number" },
+        "totalExpenses": { "type": "number" },
+        "netProfit": { "type": "number" },
+        "openingCashBalance": { "type": "number" },
+        "closingCashBalance": { "type": "number" },
+        "totalInventorySnapshot": { "type": "number" },
+        "totalCustomerDebtSnapshot": { "type": "number" },
+        "closedBy": { "type": "string" },
+        "closedAt": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["startDate", "endDate", "totalSales", "totalExpenses", "netProfit"]
+    }
+  },
+  "auth": {
+    "providers": ["password", "anonymous"]
+  },
+  "firestore": {
+    "structure": [
+      { "path": "/users/{userId}", "definition": { "entityName": "UserProfile" } },
+      { "path": "/users/{userId}/inventoryValuations/{valId}", "definition": { "entityName": "InventoryValuation" } },
+      { "path": "/users/{userId}/customerValuations/{valId}", "definition": { "entityName": "CustomerValuation" } },
+      { "path": "/users/{userId}/shortages/{sId}", "definition": { "entityName": "Shortage" } },
+      { "path": "/users/{userId}/closedPeriods/{periodId}", "definition": { "entityName": "ClosedPeriod" } }
+    ]
+  }
+}
